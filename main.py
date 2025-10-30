@@ -8,8 +8,9 @@ env.read_env()
 
 API_TOKEN = env.str("API_TOKEN")
 BOT_TOKEN = env.str("BOT_TOKEN")
+ADMIN_ID = env.int("ADMIN_ID")
 
-bot = Bot(BOT_TOKEN, admin_id=7077167971)
+bot = Bot(BOT_TOKEN, admin_id=ADMIN_ID)
 
 api_url = "https://full-media-downloader-pro-zfkrvjl323.vercel.app/"
 
