@@ -1,1 +1,5 @@
 .env
+database.db
+uv.lock
+.python-version
+.gitignore

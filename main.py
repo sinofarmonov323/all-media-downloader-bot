@@ -1,5 +1,5 @@
 import os
-from osonbot import Bot
+from osonbot import Bot, Message
 import requests
 from environs import Env
 
@@ -18,7 +18,9 @@ def InstagramDownloader(url: str):
     return requests.get(api_url + "instagramdownloader", params={"url": url, "token": API_TOKEN}).json()
 
 def YouTubeDownloader(url: str):
-    response = requests.get(api_url + "youtubedownloader", params={'url': url, "token": API_TOKEN}).json()
+    response = requests.get(api_url + "youtubedownloader", params={'url': url, "token": API_TOKEN})
+    print(response)
+    response = response.json()
     return {"title": response['title'], "thumbnail": response['thumbnail'], "url": response['video'][0]['url']}
 
 def FacebookDownloader(url: str):
@@ -49,45 +51,45 @@ def imagesaver(url: str):
                 if chunk:
                     f.write(chunk)
 
-def main(msg):
-    text = msg['text']
+def main(msg: Message):
+    text = msg.text
     downloader = None
     if "https://" in text or "http://" in text:
-        bot.send_message(msg['chat']['id'], "Yuklanmoqda...")
+        bot.send_message(msg.chat.id, "Yuklanmoqda...")
         if "www.instagram.com" in text:
             downloader = InstagramDownloader(text)
             if downloader['type'] == "video":
                 videosaver(downloader['urls'][0])
-                bot.send_video(msg['chat']['id'], "video.mp4", caption=downloader['title'])
+                bot.send_video(msg.chat.id, "video.mp4", caption=downloader['title'])
                 os.remove("video.mp4")
             elif downloader['type'] == "image":
                 imagesaver(downloader['urls'][0])
-                bot.send_photo(msg['chat']['id'], "image.jpg", caption=downloader['title'])
+                bot.send_photo(msg.chat.id, "image.jpg", caption=downloader['title'])
                 os.remove("image.jpg")
         elif "youtube.com" in text or "youtu.be" in text:
             downloader = YouTubeDownloader(text)
-            bot.send_video(msg['chat']['id'], downloader['url'], caption=downloader['title'])
+            bot.send_video(msg.chat.id, downloader['url'], caption=downloader['title'])
         elif "facebook.com" in text or "fb.watch" in text:
             downloader = FacebookDownloader(text)
             if downloader['hd_url']:
-                bot.send_video(msg['chat']['id'], str(downloader['hd_url']), caption=downloader['title'])
+                bot.send_video(msg.chat.id, str(downloader['hd_url']), caption=downloader['title'])
             elif downloader['sd_url']:
-                bot.send_video(msg['chat']['id'], str(downloader['sd_url']), caption=downloader['title'])
+                bot.send_video(msg.chat.id, str(downloader['sd_url']), caption=downloader['title'])
             else:
-                bot.send_photo(msg['chat']['id'], str(downloader['thumbnail']), caption=downloader['title'])
+                bot.send_photo(msg.chat.id, str(downloader['thumbnail']), caption=downloader['title'])
         elif "pinterest.com" in text or "pin.it" in text:
             downloader = PinterestDownloader(text)
             try:
-                bot.send_photo(msg['chat']['id'], downloader['images'], caption=downloader['title'])
+                bot.send_photo(msg.chat.id, downloader['images'], caption=downloader['title'])
             except:
-                bot.send_video(msg['chat']['id'], downloader['urls'], caption=downloader['title'])
+                bot.send_video(msg.chat.id, downloader['urls'], caption=downloader['title'])
         elif "tiktok" in text:
             downloader = TikTokDownloader(text)
-            bot.send_video(msg['chat']['id'], downloader['play'], caption=downloader['title'])
+            bot.send_video(msg.chat.id, downloader['play'], caption=downloader['title'])
         elif "snapchat.com" in text:
             downloader = SnapchatDownloader(text)
             print(downloader)
-            bot.send_video(msg['chat']['id'], downloader['url'], caption=downloader['title'])
+            bot.send_video(msg.chat.id, downloader['url'], caption=downloader['title'])
         
 
 bot.when("/start", "Salom {first_name}")

@@ -1,0 +1,11 @@
+[project]
+name = "all-media-downloader-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "environs>=15.0.1",
+    "osonbot>=1.2.5",
+    "requests>=2.34.2",
+]
